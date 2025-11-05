@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "cybercom",
+	"version": "${version}",
+	"name": "CYBERCOM",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/cybercom/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.cybercom.CYBERCOM"
+		],
+		"client": [
+			"com.cybercom.CYBERCOMClient"
+		]
+	},
+	"mixins": [
+		"cybercom.mixins.json",
+		{
+			"config": "cybercom.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.17.3",
+		"minecraft": "~1.21.8",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
