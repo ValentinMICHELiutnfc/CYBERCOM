@@ -1,4 +1,5 @@
-.DS_Store
-.gradle/*
-.mcreator/*
-build/*
+workspace/.DS_Store
+workspace/.gradle/*
+workspace/.mcreator/*
+workspace/build/*
+workspace/run/*
