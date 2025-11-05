@@ -26,6 +26,22 @@ public class RSACommand {
                                             }
                                             return 1;
                                         }))))
+                .then(literal("clepublic")
+                        .then(argument("p", LongArgumentType.longArg(0))
+                                .then(argument("q",LongArgumentType.longArg(0))
+                                        .then(argument("e",LongArgumentType.longArg(0))
+                                                .executes(ctx -> {
+                                                    long p = LongArgumentType.getLong(ctx,"p");
+                                                    long q = LongArgumentType.getLong(ctx,"q");
+                                                    long e = LongArgumentType.getLong(ctx, "e");
+                                                    long[] clePublic = RSA.clePublique(p,q,e);
+                                                    if(clePublic != null) {
+                                                        ctx.getSource().sendFeedback(() -> Text.literal("n=" + clePublic[0] + "e=" + clePublic[1]), false);
+                                                    } else {
+                                                        ctx.getSource().sendFeedback(() -> Text.literal("Échec génération clé publique"),false);
+                                                    }
+                                                    return 1;
+                                                })))))
                 .then(literal("encode")
                         .then(argument("M", LongArgumentType.longArg())
                                 .then(argument("n", LongArgumentType.longArg())
