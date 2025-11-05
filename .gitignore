@@ -1,5 +1,4 @@
-workspace/.DS_Store
-workspace/.gradle/*
-workspace/.mcreator/*
-workspace/build/*
-workspace/run/*
+.idea/*
+.gradle/*
+build/*
+out/*
