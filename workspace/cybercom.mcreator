@@ -1,0 +1,52 @@
+{
+  "mod_elements": [],
+  "variable_elements": [],
+  "sound_elements": [],
+  "tag_elements": {},
+  "tab_element_order": {},
+  "language_map": {
+    "en_us": {}
+  },
+  "metadata": {
+    "files": [
+      "src/main/java/net/mcreator/cybercom/CybercomMod.java",
+      "src/main/java/net/mcreator/cybercom/event/LivingEntityEvents.java",
+      "src/main/java/net/mcreator/cybercom/mixin/ItemStackMixin.java",
+      "src/main/resources/fabric.mod.json",
+      "src/main/resources/META-INF/cybercom.accesswidener",
+      "src/main/java/net/mcreator/cybercom/mixin/BoneMealItemMixin.java",
+      "src/main/java/net/mcreator/cybercom/event/MiscEvents.java",
+      "src/main/java/net/mcreator/cybercom/CybercomModClient.java",
+      "src/main/java/net/mcreator/cybercom/event/ItemEvents.java",
+      "src/main/java/net/mcreator/cybercom/mixin/ExperienceOrbMixin.java",
+      "src/main/java/net/mcreator/cybercom/event/PlayerEvents.java",
+      "src/main/java/net/mcreator/cybercom/mixin/BlockItemMixin.java",
+      "src/main/resources/cybercom.mixins.json",
+      "src/main/java/net/mcreator/cybercom/mixin/CommandsMixin.java",
+      "src/main/resources/pack.mcmeta",
+      "src/main/java/net/mcreator/cybercom/mixin/LivingEntityMixin.java",
+      "src/main/java/net/mcreator/cybercom/mixin/PlayerMixin.java",
+      "src/main/java/net/mcreator/cybercom/event/BlockEvents.java"
+    ]
+  },
+  "foldersRoot": {
+    "name": "~",
+    "children": []
+  },
+  "workspaceSettings": {
+    "modid": "cybercom",
+    "modName": "CYBERCOM",
+    "version": "1.0.0",
+    "author": "MCreator",
+    "websiteURL": "https://mcreator.net",
+    "license": "Not specified",
+    "serverSideOnly": false,
+    "requiredMods": [],
+    "dependencies": [],
+    "dependants": [],
+    "mcreatorDependencies": [],
+    "currentGenerator": "fabric-1.21.8",
+    "modElementsPackage": "net.mcreator.cybercom"
+  },
+  "mcreatorVersion": 202500344519
+}
