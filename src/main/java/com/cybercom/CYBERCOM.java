@@ -1,6 +1,7 @@
 package com.cybercom;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,5 +21,11 @@ public class CYBERCOM implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Hello Fabric world!");
+
+		// Enregistrement de la commande /rsa
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+			RSACommand.register(dispatcher);
+		});
+		LOGGER.info("Commande /rsa enregistrée");
 	}
 }
