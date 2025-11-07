@@ -48,7 +48,7 @@ public class RSA {
             v0 = v1;
             v1 = v;
         }
-        return new long[] { r0, u0, v0 };
+        return new long[]{r0, u0, v0};
     }
 
     /**
@@ -168,7 +168,7 @@ public class RSA {
             return null;
         }
 
-        return new long[] { p, q, e };
+        return new long[]{p, q, e};
     }
 
     /**
@@ -178,7 +178,7 @@ public class RSA {
     public static long[] clePublique(long p, long q, long e) {
         // ATTENTION : p * q peut déborder
         long n = p * q;
-        return new long[] { n, e };
+        return new long[]{n, e};
     }
 
     /**
@@ -191,7 +191,7 @@ public class RSA {
         long n = p * q;
         long d = inverseModulaire(e, m);
 
-        return new long[] { n, d };
+        return new long[]{n, d};
     }
 
     /**
@@ -224,63 +224,4 @@ public class RSA {
         return x;
     }
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Choisir une option :");
-        System.out.println("1) Générer une clé RSA");
-        System.out.println("2) Coder un message");
-        System.out.println("3) Décoder un message");
-        System.out.print("Option (1-3) : ");
-
-        int option = scanner.nextInt();
-
-        switch (option) {
-            case 1:
-                System.out.print("Entrez la borne inférieure (inf) : ");
-                long inf = scanner.nextLong();
-                System.out.print("Entrez la longueur de l'intervalle (lg) : ");
-                long lg = scanner.nextLong();
-
-                // Appel direct à la fonction statique
-                long[] cle = choixCle(inf, lg);
-
-                if (cle != null) {
-                    // Le script bash affiche "p q e"
-                    System.out.println(cle[0] + " " + cle[1] + " " + cle[2]);
-                }
-                break;
-            case 2:
-                System.out.print("Entrez le message à coder (entier x) : ");
-                long x = scanner.nextLong();
-                System.out.print("Entrez la clé publique (n e) : ");
-                long n_pub = scanner.nextLong();
-                long e_pub = scanner.nextLong();
-
-                long y = codageRSA(x, n_pub, e_pub);
-
-                if (y != -1) { // N'affiche rien si l'erreur a été signalée
-                    System.out.println(y);
-                }
-                break;
-            case 3:
-                System.out.print("Entrez le message à décoder (entier y) : ");
-                long y_dec = scanner.nextLong();
-                System.out.print("Entrez la clé privée (n d) : ");
-                long n_priv = scanner.nextLong();
-                long d_priv = scanner.nextLong();
-
-                long x_dec = decodageRSA(y_dec, n_priv, d_priv);
-
-                if (x_dec != -1) { // N'affiche rien si l'erreur a été signalée
-                    System.out.println(x_dec);
-                }
-                break;
-            default:
-                System.out.println("Option invalide.");
-                break;
-        }
-
-        scanner.close();
-    }
 }

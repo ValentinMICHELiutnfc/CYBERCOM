@@ -22,6 +22,8 @@ public class CYBERCOM implements ModInitializer {
 
 		LOGGER.info("Hello Fabric world!");
 
+        ModDataComponents.register();
+
 		// Enregistrement de la commande /rsa
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			RSACommand.register(dispatcher);
