@@ -59,7 +59,8 @@ public class CyberBookCommand {
                                 sender.giveItemStack(decodedBook);
                                 ctx.getSource().sendFeedback(() -> Text.literal("Livre déchiffré avec votre clé privée"), false);
                             } catch (Exception ex) {
-                                ctx.getSource().sendFeedback(() -> Text.literal("Erreur: " + ex.getMessage()), false);
+                                CYBERCOM.LOGGER.error("cyberbook decode failed", ex);
+                                ctx.getSource().sendFeedback(() -> Text.literal("Erreur: Impossible de déchiffrer ce livre"), false);
                             }
                             return 1;
                         }))
@@ -71,15 +72,16 @@ public class CyberBookCommand {
                                             long n = LongArgumentType.getLong(ctx, "n");
                                             long d = LongArgumentType.getLong(ctx, "d");
 
-                                            ItemStack heldItem = sender.getMainHandStack();
-                                            try {
-                                                ItemStack decodedBook = CyberBook.decodeBookWithKey(heldItem, new long[]{n, d});
-                                                sender.giveItemStack(decodedBook);
-                                                ctx.getSource().sendFeedback(() -> Text.literal("Livre déchiffré avec la clé privée fournie"), false);
-                                            } catch (Exception ex) {
-                                                ctx.getSource().sendFeedback(() -> Text.literal("Erreur: " + ex.getMessage()), false);
-                                            }
-                                            return 1;
+                            ItemStack heldItem = sender.getMainHandStack();
+                            try {
+                                ItemStack decodedBook = CyberBook.decodeBookWithKey(heldItem, new long[]{n, d});
+                                sender.giveItemStack(decodedBook);
+                                ctx.getSource().sendFeedback(() -> Text.literal("Livre déchiffré avec la clé privée fournie"), false);
+                            } catch (Exception ex) {
+                                CYBERCOM.LOGGER.error("cyberbook decodewithkey failed", ex);
+                                ctx.getSource().sendFeedback(() -> Text.literal("Erreur: Impossible de déchiffrer ce livre"), false);
+                            }
+                            return 1;
                                         }))))
         );
     }
