@@ -17,14 +17,14 @@ public class RSAMessage {
         if(public_key == null) throw new RuntimeException("Couldn't generate the public_keys");
         long[] private_key = RSA.clePrivee(p,q,e);
         if(private_key == null) throw new RuntimeException("Couldn't generate the private_keys");
-        player.setComponent(ModDataComponents.PUBLIC_KEY,public_key);
-        player.setComponent(ModDataComponents.PRIVATE_KEY,private_key);
+        player.setAttached(ModDataComponents.PUBLIC_KEY, public_key);
+        player.setAttached(ModDataComponents.PRIVATE_KEY, private_key);
     }
 
     public static long encodeMessage(PlayerEntity player, String message){
         long messageASCII = 0;
         long messageASCII_encoded = 0;
-        long[] public_key = player.get(ModDataComponents.PUBLIC_KEY);
+        long[] public_key = player.getAttached(ModDataComponents.PUBLIC_KEY);
         for(int i = 0 ; i < message.length() ; i++){
             messageASCII += (long)((int) message.charAt(i));
         }

@@ -22,7 +22,7 @@ public class CyberBook {
             throw new IllegalArgumentException("Item must be a book");
         }
 
-        long[] publicKey = player.get(ModDataComponents.PUBLIC_KEY);
+        long[] publicKey = player.getAttached(ModDataComponents.PUBLIC_KEY);
         if (publicKey == null) {
             throw new RuntimeException("Player has no public key");
         }
@@ -74,7 +74,7 @@ public class CyberBook {
             throw new IllegalArgumentException("Item must be a written book");
         }
 
-        long[] privateKey = player.get(ModDataComponents.PRIVATE_KEY);
+        long[] privateKey = player.getAttached(ModDataComponents.PRIVATE_KEY);
         if (privateKey == null) {
             throw new RuntimeException("Player has no private key");
         }

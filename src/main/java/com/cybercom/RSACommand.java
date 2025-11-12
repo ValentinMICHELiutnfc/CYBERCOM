@@ -3,10 +3,11 @@ package com.cybercom;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.LongArgumentType;
-import net.minecraft.component.ComponentType;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import org.slf4j.Logger;
+
+import java.util.Arrays;
 
 import static com.cybercom.CYBERCOM.LOGGER;
 import static net.minecraft.server.command.CommandManager.argument;
@@ -71,16 +72,45 @@ public class RSACommand {
                                                     else ctx.getSource().sendFeedback(() -> Text.literal("decoded=" + x), false);
                                                     return 1;
                                                 })))))
-                .then(literal("getKeys"))
-                        .executes(
-                        ctx -> {
-                            long[] PUB_KEY = ctx.getSource().getPlayerOrThrow().get(ModDataComponents.PUBLIC_KEY);
-                            if(PUB_KEY == null) throw  new RuntimeException("PUB KEY NULL");
-                            long[] PRIVATE_KEY = ctx.getSource().getPlayerOrThrow().get(ModDataComponents.PRIVATE_KEY);
-                            if(PRIVATE_KEY == null) throw  new RuntimeException("PRIVATE KEY NULL");
-                            ctx.getSource().sendFeedback(() -> Text.literal("PUBLIC KEY : "+PUB_KEY.toString()+" | PRIVATE KEY : "+PRIVATE_KEY.toString()),false);
-                            return 1;
-                        })
+                .then(literal("getKeys").executes(ctx -> {
+                    try {
+                        ServerPlayerEntity player = ctx.getSource().getPlayerOrThrow();
+                        LOGGER.info("Getting keys for player: " + player.getName().getString());
+
+                        long[] PUB_KEY = player.getAttached(ModDataComponents.PUBLIC_KEY);
+                        LOGGER.info("Public key retrieved: " + (PUB_KEY == null ? "NULL" : Arrays.toString(PUB_KEY)));
+
+                        if (PUB_KEY == null) {
+                            LOGGER.warn("Public key is null, attempting to initialize...");
+                            RSAMessage.initkeys(player);
+                            PUB_KEY = player.getAttached(ModDataComponents.PUBLIC_KEY);
+                            LOGGER.info("After init, public key: " + (PUB_KEY == null ? "STILL NULL" : Arrays.toString(PUB_KEY)));
+
+                            if (PUB_KEY == null) {
+                                ctx.getSource().sendFeedback(() -> Text.literal("Erreur: Impossible d'initialiser les clés"), false);
+                                return 0;
+                            }
+                        }
+
+                        long[] PRIVATE_KEY = player.getAttached(ModDataComponents.PRIVATE_KEY);
+                        LOGGER.info("Private key retrieved: " + (PRIVATE_KEY == null ? "NULL" : Arrays.toString(PRIVATE_KEY)));
+
+                        if (PRIVATE_KEY == null) {
+                            ctx.getSource().sendFeedback(() -> Text.literal("Aucune clé privée trouvée pour ce joueur"), false);
+                            return 0;
+                        }
+
+                        // Create final copies for lambda
+                        final long[] finalPubKey = PUB_KEY;
+                        final long[] finalPrivKey = PRIVATE_KEY;
+                        ctx.getSource().sendFeedback(() -> Text.literal("PUBLIC KEY : " + Arrays.toString(finalPubKey) + " | PRIVATE KEY : " + Arrays.toString(finalPrivKey)), false);
+                        return 1;
+                    } catch (Exception ex) {
+                        LOGGER.error("rsa getKeys failed", ex);
+                        ctx.getSource().sendFeedback(() -> Text.literal("Erreur interne: " + ex.getMessage()), false);
+                        return 0;
+                    }
+                }))
         );
 
     }

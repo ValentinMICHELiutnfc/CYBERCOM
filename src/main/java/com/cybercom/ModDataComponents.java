@@ -1,9 +1,8 @@
 package com.cybercom;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.component.ComponentType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
@@ -14,23 +13,16 @@ public class ModDataComponents {
             arr -> List.of(arr[0], arr[1])                // encode
     );
 
+    // Use AttachmentType for entity data (players), not ComponentType (which is for items)
+    public static final AttachmentType<long[]> PUBLIC_KEY = AttachmentRegistry.<long[]>builder()
+            .persistent(LONG_PAIR_CODEC)
+            .buildAndRegister(Identifier.of(CYBERCOM.MOD_ID, "public_key"));
 
-    public static final ComponentType<long[]> PUBLIC_KEY = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of("mymod", "public_key"),
-            ComponentType.<long[]>builder()
-                    .codec(LONG_PAIR_CODEC)
-                    .build()
-    );
-
-    public static final ComponentType<long[]> PRIVATE_KEY = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of("mymod", "private_key"),
-            ComponentType.<long[]>builder()
-                    .codec(LONG_PAIR_CODEC)
-                    .build()
-    );
+    public static final AttachmentType<long[]> PRIVATE_KEY = AttachmentRegistry.<long[]>builder()
+            .persistent(LONG_PAIR_CODEC)
+            .buildAndRegister(Identifier.of(CYBERCOM.MOD_ID, "private_key"));
 
     public static void register(){
+        CYBERCOM.LOGGER.info("Registered attachment types: PUBLIC_KEY={}, PRIVATE_KEY={}", PUBLIC_KEY, PRIVATE_KEY);
     }
 }
