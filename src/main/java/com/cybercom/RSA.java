@@ -196,14 +196,10 @@ public class RSA {
 
     /**
      * Code un message M avec la clé publique (n, e).
-     * NOTE : Le test 'if (M < n)' est incorrect dans le script original
-     * (il devrait être 'if (M >= n)'), mais il est reproduit ici
-     * "exactement" comme demandé.
      */
     public static long codageRSA(long M, long n, long e) {
-        if (M < n) {
-            System.out.println("Le message à coder doit être inférieur à n.");
-            return -1; // Signale l'erreur
+        if (M >= n) {
+            throw new IllegalArgumentException("Le message (" + M + ") doit être strictement inférieur à n (" + n + ").");
         }
 
         long y = expoModulaire(M, e, n);
@@ -212,12 +208,10 @@ public class RSA {
 
     /**
      * Décode un message M avec la clé privée (n, d).
-     * NOTE : Le test 'if (M < n)' est incorrect, comme pour codageRSA.
      */
     public static long decodageRSA(long M, long n, long d) {
-        if (M < n) {
-            System.out.println("Le message à décoder doit être inférieur à n.");
-            return -1; // Signale l'erreur
+        if (M >= n) {
+            throw new IllegalArgumentException("Le message codé (" + M + ") doit être strictement inférieur à n (" + n + ").");
         }
 
         long x = expoModulaire(M, d, n);
