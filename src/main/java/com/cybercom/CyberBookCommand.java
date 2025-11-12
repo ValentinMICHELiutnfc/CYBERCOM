@@ -25,8 +25,8 @@ public class CyberBookCommand {
                                         ItemStack encodedBook = CyberBook.encodeBook(heldItem, target);
                                         sender.giveItemStack(encodedBook);
                                         ctx.getSource().sendFeedback(() -> Text.literal("Livre chiffré avec la clé publique de " + target.getName().getString()), false);
-                                        ctx.getSource().sendFeedback(() -> Text.literal("Livre chiffré avec la clé publique de " + target.getGameProfile().getName().toString()), false);
                                     } catch (Exception ex) {
+                                        CYBERCOM.LOGGER.error("cyberbook encode failed", ex);
                                         ctx.getSource().sendFeedback(() -> Text.literal("Erreur: " + ex.getMessage()), false);
                                     }
                                     return 1;
