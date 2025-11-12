@@ -25,7 +25,7 @@ public class CyberBookCommand {
                                         ItemStack encodedBook = CyberBook.encodeBook(heldItem, target);
                                         sender.giveItemStack(encodedBook);
                                         ctx.getSource().sendFeedback(() -> Text.literal("Livre chiffré avec la clé publique de " + target.getName().getString()), false);
-                                        ctx.getSource().sendFeedback(() -> Text.literal("Livre chiffré avec la clé publique de " + target.getGameProfile().name()), false);
+                                        ctx.getSource().sendFeedback(() -> Text.literal("Livre chiffré avec la clé publique de " + target.getGameProfile().getName().toString()), false);
                                     } catch (Exception ex) {
                                         ctx.getSource().sendFeedback(() -> Text.literal("Erreur: " + ex.getMessage()), false);
                                     }
