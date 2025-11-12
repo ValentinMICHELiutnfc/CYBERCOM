@@ -27,6 +27,7 @@ public class CYBERCOM implements ModInitializer {
 		// Enregistrement de la commande /rsa
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			RSACommand.register(dispatcher);
+            RSAMessageCommand.register(dispatcher);
 		});
 		LOGGER.info("Commande /rsa enregistrée");
 	}
