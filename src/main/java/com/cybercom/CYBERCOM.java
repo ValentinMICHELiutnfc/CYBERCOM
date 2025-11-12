@@ -1,8 +1,10 @@
 package com.cybercom;
 
+import com.mojang.authlib.minecraft.client.MinecraftClient;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
+import net.minecraft.entity.player.PlayerEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,13 +23,14 @@ public class CYBERCOM implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Hello Fabric world!");
-
         ModDataComponents.register();
-
+        ModEvents.register();
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			RSACommand.register(dispatcher);
 			CyberBookCommand.register(dispatcher);
 		});
 		LOGGER.info("Commandes enregistrées");
+
+
 	}
 }

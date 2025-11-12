@@ -3,9 +3,12 @@ package com.cybercom;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.LongArgumentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import org.slf4j.Logger;
 
+import static com.cybercom.CYBERCOM.LOGGER;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -67,6 +70,18 @@ public class RSACommand {
                                                     if (x == -1) ctx.getSource().sendFeedback(() -> Text.literal("Erreur: condition non satisfaite"), false);
                                                     else ctx.getSource().sendFeedback(() -> Text.literal("decoded=" + x), false);
                                                     return 1;
-                                                }))))));
+                                                })))))
+                .then(literal("getKeys"))
+                        .executes(
+                        ctx -> {
+                            long[] PUB_KEY = ctx.getSource().getPlayerOrThrow().get(ModDataComponents.PUBLIC_KEY);
+                            if(PUB_KEY == null) throw  new RuntimeException("PUB KEY NULL");
+                            long[] PRIVATE_KEY = ctx.getSource().getPlayerOrThrow().get(ModDataComponents.PRIVATE_KEY);
+                            if(PRIVATE_KEY == null) throw  new RuntimeException("PRIVATE KEY NULL");
+                            ctx.getSource().sendFeedback(() -> Text.literal("PUBLIC KEY : "+PUB_KEY.toString()+" | PRIVATE KEY : "+PRIVATE_KEY.toString()),false);
+                            return 1;
+                        })
+        );
+
     }
 }
