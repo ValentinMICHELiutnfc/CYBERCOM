@@ -27,13 +27,22 @@ public class CyberBook {
             throw new RuntimeException("Player has no public key");
         }
 
-        return encodeBookWithKey(bookStack, publicKey);
+        // Use the player's name as the book title
+        String playerName = player.getName().getString();
+        return encodeBookWithKey(bookStack, publicKey, playerName);
     }
 
     /**
      * Encode a written book's content using a specific public key.
      */
     public static ItemStack encodeBookWithKey(ItemStack bookStack, long[] publicKey) {
+        return encodeBookWithKey(bookStack, publicKey, "[ENCRYPTED]");
+    }
+
+    /**
+     * Encode a written book's content using a specific public key with a custom title.
+     */
+    public static ItemStack encodeBookWithKey(ItemStack bookStack, long[] publicKey, String title) {
         if (bookStack.getItem() != Items.WRITTEN_BOOK && bookStack.getItem() != Items.WRITABLE_BOOK) {
             throw new IllegalArgumentException("Item must be a book");
         }
@@ -55,7 +64,7 @@ public class CyberBook {
         // Create new book with encoded content
         ItemStack encodedBook = new ItemStack(Items.WRITTEN_BOOK);
         WrittenBookContentComponent encodedContent = new WrittenBookContentComponent(
-                RawFilteredPair.of("[ENCRYPTED]"),
+                RawFilteredPair.of(title),
                 content.author(),
                 content.generation(),
                 encodedPages,
