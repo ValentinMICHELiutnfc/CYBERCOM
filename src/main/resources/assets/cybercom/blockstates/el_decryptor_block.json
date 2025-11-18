@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "cybercom:block/el_decryptor_block"
+    }
+  }
+}
