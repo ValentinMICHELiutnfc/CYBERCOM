@@ -22,7 +22,7 @@ public class CyberBook {
             throw new IllegalArgumentException("Item must be a book");
         }
 
-        long[] publicKey = player.getAttached(ModDataComponents.PUBLIC_KEY);
+        String publicKey = player.getAttached(ModDataComponents.PUBLIC_KEY);
         if (publicKey == null) {
             throw new RuntimeException("Player has no public key");
         }
@@ -35,14 +35,14 @@ public class CyberBook {
     /**
      * Encode a written book's content using a specific public key.
      */
-    public static ItemStack encodeBookWithKey(ItemStack bookStack, long[] publicKey) {
+    public static ItemStack encodeBookWithKey(ItemStack bookStack, String publicKey) {
         return encodeBookWithKey(bookStack, publicKey, "[ENCRYPTED]");
     }
 
     /**
      * Encode a written book's content using a specific public key with a custom title.
      */
-    public static ItemStack encodeBookWithKey(ItemStack bookStack, long[] publicKey, String title) {
+    public static ItemStack encodeBookWithKey(ItemStack bookStack, String publicKey, String title) {
         if (bookStack.getItem() != Items.WRITTEN_BOOK && bookStack.getItem() != Items.WRITABLE_BOOK) {
             throw new IllegalArgumentException("Item must be a book");
         }
@@ -83,7 +83,7 @@ public class CyberBook {
             throw new IllegalArgumentException("Item must be a written book");
         }
 
-        long[] privateKey = player.getAttached(ModDataComponents.PRIVATE_KEY);
+        String privateKey = player.getAttached(ModDataComponents.PRIVATE_KEY);
         if (privateKey == null) {
             throw new RuntimeException("Player has no private key");
         }
@@ -94,7 +94,7 @@ public class CyberBook {
     /**
      * Decode an encrypted book using a specific private key.
      */
-    public static ItemStack decodeBookWithKey(ItemStack bookStack, long[] privateKey) {
+    public static ItemStack decodeBookWithKey(ItemStack bookStack, String privateKey) {
         if (bookStack.getItem() != Items.WRITTEN_BOOK) {
             throw new IllegalArgumentException("Item must be a written book");
         }

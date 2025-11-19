@@ -1,7 +1,7 @@
 package com.cybercom;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.LongArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
@@ -32,23 +32,21 @@ public class CyberBookCommand {
                                     return 1;
                                 })))
                 .then(literal("encodewithkey")
-                        .then(argument("n", LongArgumentType.longArg())
-                                .then(argument("e", LongArgumentType.longArg())
-                                        .executes(ctx -> {
-                                            ServerPlayerEntity sender = ctx.getSource().getPlayerOrThrow();
-                                            long n = LongArgumentType.getLong(ctx, "n");
-                                            long e = LongArgumentType.getLong(ctx, "e");
+                        .then(argument("publicKey", StringArgumentType.greedyString())
+                                .executes(ctx -> {
+                                    ServerPlayerEntity sender = ctx.getSource().getPlayerOrThrow();
+                                    String publicKey = StringArgumentType.getString(ctx, "publicKey");
 
-                                            ItemStack heldItem = sender.getMainHandStack();
-                                            try {
-                                                ItemStack encodedBook = CyberBook.encodeBookWithKey(heldItem, new long[]{n, e});
-                                                sender.giveItemStack(encodedBook);
-                                                ctx.getSource().sendFeedback(() -> Text.literal("Livre chiffré avec la clé publique fournie"), false);
-                                            } catch (Exception ex) {
-                                                ctx.getSource().sendFeedback(() -> Text.literal("Erreur: " + ex.getMessage()), false);
-                                            }
-                                            return 1;
-                                        }))))
+                                    ItemStack heldItem = sender.getMainHandStack();
+                                    try {
+                                        ItemStack encodedBook = CyberBook.encodeBookWithKey(heldItem, publicKey);
+                                        sender.giveItemStack(encodedBook);
+                                        ctx.getSource().sendFeedback(() -> Text.literal("Livre chiffré avec la clé publique fournie"), false);
+                                    } catch (Exception ex) {
+                                        ctx.getSource().sendFeedback(() -> Text.literal("Erreur: " + ex.getMessage()), false);
+                                    }
+                                    return 1;
+                                })))
                 .then(literal("decode")
                         .executes(ctx -> {
                             ServerPlayerEntity sender = ctx.getSource().getPlayerOrThrow();
@@ -65,16 +63,14 @@ public class CyberBookCommand {
                             return 1;
                         }))
                 .then(literal("decodewithkey")
-                        .then(argument("n", LongArgumentType.longArg())
-                                .then(argument("d", LongArgumentType.longArg())
-                                        .executes(ctx -> {
-                                            ServerPlayerEntity sender = ctx.getSource().getPlayerOrThrow();
-                                            long n = LongArgumentType.getLong(ctx, "n");
-                                            long d = LongArgumentType.getLong(ctx, "d");
+                        .then(argument("privateKey", StringArgumentType.greedyString())
+                                .executes(ctx -> {
+                                    ServerPlayerEntity sender = ctx.getSource().getPlayerOrThrow();
+                                    String privateKey = StringArgumentType.getString(ctx, "privateKey");
 
                             ItemStack heldItem = sender.getMainHandStack();
                             try {
-                                ItemStack decodedBook = CyberBook.decodeBookWithKey(heldItem, new long[]{n, d});
+                                ItemStack decodedBook = CyberBook.decodeBookWithKey(heldItem, privateKey);
                                 sender.giveItemStack(decodedBook);
                                 ctx.getSource().sendFeedback(() -> Text.literal("Livre déchiffré avec la clé privée fournie"), false);
                             } catch (Exception ex) {
@@ -82,7 +78,7 @@ public class CyberBookCommand {
                                 ctx.getSource().sendFeedback(() -> Text.literal("Erreur: Impossible de déchiffrer ce livre"), false);
                             }
                             return 1;
-                                        }))))
+                                })))
         );
     }
 }

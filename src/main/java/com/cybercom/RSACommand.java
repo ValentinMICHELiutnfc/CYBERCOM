@@ -77,14 +77,14 @@ public class RSACommand {
                         ServerPlayerEntity player = ctx.getSource().getPlayerOrThrow();
                         LOGGER.info("Getting keys for player: " + player.getName().getString());
 
-                        long[] PUB_KEY = player.getAttached(ModDataComponents.PUBLIC_KEY);
-                        LOGGER.info("Public key retrieved: " + (PUB_KEY == null ? "NULL" : Arrays.toString(PUB_KEY)));
+                        String PUB_KEY = player.getAttached(ModDataComponents.PUBLIC_KEY);
+                        LOGGER.info("Public key retrieved: " + (PUB_KEY == null ? "NULL" : PUB_KEY));
 
                         if (PUB_KEY == null) {
                             LOGGER.warn("Public key is null, attempting to initialize...");
                             RSAMessage.initkeys(player);
                             PUB_KEY = player.getAttached(ModDataComponents.PUBLIC_KEY);
-                            LOGGER.info("After init, public key: " + (PUB_KEY == null ? "STILL NULL" : Arrays.toString(PUB_KEY)));
+                            LOGGER.info("After init, public key: " + (PUB_KEY == null ? "STILL NULL" : PUB_KEY));
 
                             if (PUB_KEY == null) {
                                 ctx.getSource().sendFeedback(() -> Text.literal("Erreur: Impossible d'initialiser les clés"), false);
@@ -92,8 +92,8 @@ public class RSACommand {
                             }
                         }
 
-                        long[] PRIVATE_KEY = player.getAttached(ModDataComponents.PRIVATE_KEY);
-                        LOGGER.info("Private key retrieved: " + (PRIVATE_KEY == null ? "NULL" : Arrays.toString(PRIVATE_KEY)));
+                        String PRIVATE_KEY = player.getAttached(ModDataComponents.PRIVATE_KEY);
+                        LOGGER.info("Private key retrieved: " + (PRIVATE_KEY == null ? "NULL" : PRIVATE_KEY));
 
                         if (PRIVATE_KEY == null) {
                             ctx.getSource().sendFeedback(() -> Text.literal("Aucune clé privée trouvée pour ce joueur"), false);
@@ -101,9 +101,9 @@ public class RSACommand {
                         }
 
                         // Create final copies for lambda
-                        final long[] finalPubKey = PUB_KEY;
-                        final long[] finalPrivKey = PRIVATE_KEY;
-                        ctx.getSource().sendFeedback(() -> Text.literal("PUBLIC KEY : " + Arrays.toString(finalPubKey) + " | PRIVATE KEY : " + Arrays.toString(finalPrivKey)), false);
+                        final String finalPubKey = PUB_KEY;
+                        final String finalPrivKey = PRIVATE_KEY;
+                        ctx.getSource().sendFeedback(() -> Text.literal("PUBLIC KEY : " + finalPubKey + " | PRIVATE KEY : " + finalPrivKey), false);
                         return 1;
                     } catch (Exception ex) {
                         LOGGER.error("rsa getKeys failed", ex);

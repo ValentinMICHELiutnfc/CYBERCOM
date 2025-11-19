@@ -1,49 +1,69 @@
 package com.cybercom;
 
-import java.util.Calendar;
-import java.util.Random;
+import java.math.BigInteger;
 import net.minecraft.entity.player.PlayerEntity;
 
 
 public class RSAMessage {
 
+    /**
+     * Initialize RSA keys for a player with 512-bit key strength
+     */
     public static void initkeys(PlayerEntity player){
-        // Increase the search range so n = p*q is comfortably > 255
-        // (not cryptographically secure, but avoids "message too long" for ASCII chars)
-        long[] choixCle = RSA.choixCle(100,900);
+        // Generate 512-bit RSA key pair
+        BigInteger[] choixCle = RSA.choixCle(512);
         if(choixCle == null) throw new RuntimeException("Couldn't get the keys");
-        long p = choixCle[0]; long q = choixCle[1]; long e = choixCle[2];
-        long[] public_key = RSA.clePublique(p,q,e);
+        BigInteger p = choixCle[0];
+        BigInteger q = choixCle[1];
+        BigInteger e = choixCle[2];
+
+        BigInteger[] public_key = RSA.clePublique(p, q, e);
         if(public_key == null) throw new RuntimeException("Couldn't generate the public_keys");
-        long[] private_key = RSA.clePrivee(p,q,e);
+        BigInteger[] private_key = RSA.clePrivee(p, q, e);
         if(private_key == null) throw new RuntimeException("Couldn't generate the private_keys");
-        player.setAttached(ModDataComponents.PUBLIC_KEY, public_key);
-        player.setAttached(ModDataComponents.PRIVATE_KEY, private_key);
+
+        // Store as "n,e" and "n,d" strings
+        String publicKeyStr = public_key[0].toString() + "," + public_key[1].toString();
+        String privateKeyStr = private_key[0].toString() + "," + private_key[1].toString();
+
+        player.setAttached(ModDataComponents.PUBLIC_KEY, publicKeyStr);
+        player.setAttached(ModDataComponents.PRIVATE_KEY, privateKeyStr);
     }
 
-    public static long encodeMessage(PlayerEntity player, String message){
-        long messageASCII = 0;
-        long messageASCII_encoded = 0;
-        long[] public_key = player.getAttached(ModDataComponents.PUBLIC_KEY);
-        for(int i = 0 ; i < message.length() ; i++){
-            messageASCII += (long)((int) message.charAt(i));
-        }
-        if(public_key == null) throw new RuntimeException("Public key null");
-        return RSA.codageRSA(messageASCII,public_key[0],public_key[1]);
+    /**
+     * Parse a key string "n,e" into BigInteger array [n, e]
+     */
+    private static BigInteger[] parseKey(String keyStr) {
+        if (keyStr == null || keyStr.isEmpty()) return null;
+        String[] parts = keyStr.split(",");
+        if (parts.length != 2) return null;
+        return new BigInteger[] {
+            new BigInteger(parts[0]),
+            new BigInteger(parts[1])
+        };
     }
 
+    /**
+     * Encode a message using a public key stored as string
+     */
+    public static String encodeMessageWithKey(String publicKeyStr, String message) {
+        BigInteger[] publicKey = parseKey(publicKeyStr);
+        if(publicKey == null) throw new RuntimeException("Public key null or invalid");
 
-    public static String encodeMessageWithKey(long[] publicKey, String message) {
-        if(publicKey == null) throw new RuntimeException("Public key null");
         StringBuilder encoded = new StringBuilder();
+        BigInteger n = publicKey[0];
+        BigInteger e = publicKey[1];
 
-        long n = publicKey[0];
-        if (n <= 0) throw new RuntimeException("Invalid public key modulus");
-        int width = String.valueOf(n - 1).length(); // fixed width for each encrypted block
+        // Calculate fixed width based on n
+        int width = n.subtract(BigInteger.ONE).toString().length();
 
         for(int i = 0; i < message.length(); i++) {
             int charCode = (int) message.charAt(i);
-            long encryptedChar = RSA.codageRSA(charCode, publicKey[0], publicKey[1]);
+            BigInteger encryptedChar = RSA.codageRSA(BigInteger.valueOf(charCode), n, e);
+
+            if (encryptedChar.equals(BigInteger.valueOf(-1))) {
+                throw new RuntimeException("Encryption failed for character: " + message.charAt(i));
+            }
 
             // zero-pad to fixed width and append (no separators)
             String block = String.format("%0" + width + "d", encryptedChar);
@@ -53,12 +73,16 @@ public class RSAMessage {
         return encoded.toString();
     }
 
-    public static String decodeMessageWithKey(long[] privateKey, String encryptedMessage) {
-        if(privateKey == null) throw new RuntimeException("Private key null");
+    /**
+     * Decode a message using a private key stored as string
+     */
+    public static String decodeMessageWithKey(String privateKeyStr, String encryptedMessage) {
+        BigInteger[] privateKey = parseKey(privateKeyStr);
+        if(privateKey == null) throw new RuntimeException("Private key null or invalid");
 
-        long n = privateKey[0];
-        if (n <= 0) throw new RuntimeException("Invalid private key modulus");
-        int width = String.valueOf(n - 1).length();
+        BigInteger n = privateKey[0];
+        BigInteger d = privateKey[1];
+        int width = n.subtract(BigInteger.ONE).toString().length();
 
         String trimmed = encryptedMessage.trim();
         if (trimmed.length() % width != 0) {
@@ -71,9 +95,14 @@ public class RSAMessage {
             String block = trimmed.substring(i, i + width);
             if (block.isEmpty()) continue;
             try {
-                long encryptedValue = Long.parseLong(block);
-                long decryptedValue = RSA.decodageRSA(encryptedValue, privateKey[0], privateKey[1]);
-                decoded.append((char) decryptedValue);
+                BigInteger encryptedValue = new BigInteger(block);
+                BigInteger decryptedValue = RSA.decodageRSA(encryptedValue, n, d);
+
+                if (decryptedValue.equals(BigInteger.valueOf(-1))) {
+                    throw new RuntimeException("Decryption failed");
+                }
+
+                decoded.append((char) decryptedValue.intValue());
             } catch(NumberFormatException e) {
                 throw new RuntimeException("Invalid encrypted block: " + block);
             }
