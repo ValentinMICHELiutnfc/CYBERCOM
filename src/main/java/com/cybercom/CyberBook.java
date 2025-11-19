@@ -53,12 +53,23 @@ public class CyberBook {
             throw new IllegalArgumentException("Book has no content");
         }
 
-        // Encode each page
+        // Maximum characters per page in Minecraft (conservative estimate)
+        final int MAX_PAGE_LENGTH = 266;
+
+        // Encode each page and split into multiple pages if needed
         List<RawFilteredPair<Text>> encodedPages = new ArrayList<>();
         for (RawFilteredPair<Text> page : content.pages()) {
             String pageText = page.raw().getString();
             String encodedText = RSAMessage.encodeMessageWithKey(publicKey, pageText);
-            encodedPages.add(RawFilteredPair.of(Text.literal(encodedText)));
+
+            // Split encoded text into chunks that fit in a page
+            int start = 0;
+            while (start < encodedText.length()) {
+                int end = Math.min(start + MAX_PAGE_LENGTH, encodedText.length());
+                String chunk = encodedText.substring(start, end);
+                encodedPages.add(RawFilteredPair.of(Text.literal(chunk)));
+                start = end;
+            }
         }
 
         // Create new book with encoded content
@@ -105,11 +116,28 @@ public class CyberBook {
             throw new IllegalArgumentException("Book has no content");
         }
 
-        // Decode each page
-        List<RawFilteredPair<Text>> decodedPages = new ArrayList<>();
+        // Concatenate all pages to reconstruct the full encoded text
+        StringBuilder fullEncodedText = new StringBuilder();
         for (RawFilteredPair<Text> page : content.pages()) {
-            String encodedText = page.raw().getString();
-            String decodedText = RSAMessage.decodeMessageWithKey(privateKey, encodedText);
+            fullEncodedText.append(page.raw().getString());
+        }
+
+        // Decode the full text
+        String decodedText = RSAMessage.decodeMessageWithKey(privateKey, fullEncodedText.toString());
+
+        // Split decoded text into pages (max ~200 characters per page for readability)
+        List<RawFilteredPair<Text>> decodedPages = new ArrayList<>();
+        final int MAX_PAGE_LENGTH = 200;
+        int start = 0;
+        while (start < decodedText.length()) {
+            int end = Math.min(start + MAX_PAGE_LENGTH, decodedText.length());
+            String pageChunk = decodedText.substring(start, end);
+            decodedPages.add(RawFilteredPair.of(Text.literal(pageChunk)));
+            start = end;
+        }
+
+        // If no pages, add at least one empty page
+        if (decodedPages.isEmpty()) {
             decodedPages.add(RawFilteredPair.of(Text.literal(decodedText)));
         }
 

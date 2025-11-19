@@ -11,7 +11,7 @@ public class RSAMessage {
      */
     public static void initkeys(PlayerEntity player){
         // Generate 512-bit RSA key pair
-        BigInteger[] choixCle = RSA.choixCle(512);
+        BigInteger[] choixCle = RSA.choixCle(1024);
         if(choixCle == null) throw new RuntimeException("Couldn't get the keys");
         BigInteger p = choixCle[0];
         BigInteger q = choixCle[1];
